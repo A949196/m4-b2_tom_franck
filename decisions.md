@@ -1,28 +1,22 @@
 # Décisions du binôme — M4-B2 (PCB Defect)
 
-> À compléter à 2 dès la coordination kick-off jeudi matin.
-> Servira de référence en RDV vendredi + restitution duo mardi 1ᵉʳ sept (rentrée M5).
-
 ## 1. Option choisie pour l'implémentation
 
-> Une seule option implémentée jusqu'à l'inférence. Les 2 autres sont
-> estimées (mini-prototypes + sources publiques).
-
-**Choix** : ☐ Option A (CNN scratch) ☐ Option B (Transfer learning) ☐ Option C (Zero-shot CLIP)
+**Choix** : Option A (CNN scratch)
 
 **Argument** :
-- ...
-- ...
-- ...
+- Volume modeste (~2k images, ~300/classe) : suffisant pour un CNN simple sans overfitting sur 5-10 epochs.
+- Objectif pédagogique : comprendre l'architecture de bout en bout (utile pour argumenter le comparatif face à des boîtes noires transfer/CLIP).
+- CPU-only imposé par le brief : CNN scratch reste le plus léger à entraîner et à faire tourner rapidement.
 
 ## 2. Répartition des tâches binôme
 
-| Tâche | Membre 1 (`<prénom1>`) | Membre 2 (`<prénom2>`) | Modalité |
+| Tâche | Membre 1 (`Tom`) | Membre 2 (`Carpentier`) | Modalité |
 |---|---|---|---|
-| Setup repo + EDA | ... | ... | pair-coding MP ? |
-| Implémentation option | ... | ... | ... |
-| Comparatif économique | ... | ... | ... |
-| README + restitution | ... | ... | ... |
+| Setup repo + EDA | Repo, template, branch | EDA | aync |
+| Implémentation option | Option A | Option B | async |
+| Comparatif économique | Comparatif économique | rien | async |
+| README + restitution | README | restitution | aync README + sync restitution |
 
 ## 3. Coordination Discord
 
@@ -33,21 +27,17 @@
 
 ## 4. Branches Git
 
-- Convention : `<prénom>/<feature>` (ex. `alice/option-b`, `bob/comparatif`)
+- Convention : `tom/option-a` 
 - Merge sur `main` après revue MP
 
 ## 5. Restitution duo mardi 1ᵉʳ sept (rentrée M5)
 
-- **Membre 1** présente : (démo technique 3 min)
-- **Membre 2** présente : (argumentation économique 2 min)
+- **Franck** présente : (démo technique 3 min)
+- **Tom** présente : (argumentation économique 2 min)
 - 5 min total + 5 min discussion
 
 ## 6. Points négociés (à expliciter en cas de désaccord)
 
-> Si vous n'êtes pas d'accord sur un choix, tracez-le honnêtement ici.
-
-- ...
-
 ---
 
-*Décisions tracées par le binôme `<prénom1>` × `<prénom2>` — `<date>`.*
+*Décisions tracées par le binôme `Tom` × `Franck` — `08/07/2026`.*
