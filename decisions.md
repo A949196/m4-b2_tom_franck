@@ -11,7 +11,7 @@
 
 ## 2. Répartition des tâches binôme
 
-| Tâche | Membre 1 (`Tom`) | Membre 2 (`Carpentier`) | Modalité |
+| Tâche | Membre 1 (`Tom`) | Membre 2 (`Franck`) | Modalité |
 |---|---|---|---|
 | Setup repo + EDA | Repo, template, branch | EDA | aync |
 | Implémentation option | Option A | Option B | async |
