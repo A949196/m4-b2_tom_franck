@@ -8,12 +8,12 @@
 > Une seule option implémentée jusqu'à l'inférence. Les 2 autres sont
 > estimées (mini-prototypes + sources publiques).
 
-**Choix** : ☐ Option A (CNN scratch) ☐ Option B (Transfer learning) ☐ Option C (Zero-shot CLIP)
+**Choix** : ☐ Option A (CNN scratch) ☑ Option B (Transfer learning) ☐ Option C (Zero-shot CLIP)
 
 **Argument** :
-- ...
-- ...
-- ...
+- Meilleur compromis précision/temps pour un POC : le transfert d'un ResNet-18 pré-entraîné converge plus vite qu'un CNN from scratch avec notre volume de données (~2100 images train).
+- Risque projet plus faible : l'implémentation reste standard (freeze backbone + nouvelle tête), donc plus robuste à livrer jusqu'à l'inférence dans le temps imparti.
+- Coût opérationnel maîtrisé : inférence locale sans API payante, et maintenance acceptable via fine-tuning ponctuel si la distribution des défauts évolue.
 
 ## 2. Répartition des tâches binôme
 
