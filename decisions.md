@@ -17,12 +17,12 @@
 
 ## 2. Répartition des tâches binôme
 
-| Tâche | Membre 1 (`<prénom1>`) | Membre 2 (`<prénom2>`) | Modalité |
+| Tâche | Membre 1 (`Tom`) | Membre 2 (`franck`) | Modalité |
 |---|---|---|---|
-| Setup repo + EDA | ... | ... | pair-coding MP ? |
-| Implémentation option | ... | ... | ... |
-| Comparatif économique | ... | ... | ... |
-| README + restitution | ... | ... | ... |
+| Setup repo + EDA | Repo, template, branch | EDA | aync |
+| Implémentation option | Option A | Option B | async |
+| Comparatif économique | Comparatif économique | rien | async |
+| README + restitution | README | restitution | aync README + sync restitution |
 
 ## 3. Coordination Discord
 
