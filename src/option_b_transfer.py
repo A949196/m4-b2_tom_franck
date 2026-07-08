@@ -22,9 +22,15 @@ def get_transfer_transforms(image_size: int = 224):
     Fourni : ce n'est pas l'objet de l'exercice.
     """
     return transforms.Compose([
+        # ResNet attend des images 224×224 pixels — on redimensionne depuis 64×64
         transforms.Resize((image_size, image_size)),
-        transforms.Grayscale(num_output_channels=3),  # 1→3 canaux
+        # Nos images PCB sont en niveaux de gris (1 canal).
+        # ResNet attend 3 canaux (RGB). On duplique le canal 3 fois.
+        transforms.Grayscale(num_output_channels=3),
+        # Convertit l'image PIL (valeurs 0-255) en tenseur PyTorch (valeurs 0.0-1.0)
         transforms.ToTensor(),
+        # Normalisation avec les moyennes/écarts-types du dataset ImageNet.
+        # ResNet a été entraîné avec ces valeurs → on doit les respecter.
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
                              std=[0.229, 0.224, 0.225]),
     ])
@@ -45,9 +51,33 @@ def build_resnet18_classifier(n_classes: int = len(CLASSES), freeze_backbone: bo
     Returns:
         nn.Module prêt à l'entraînement.
     """
-    # TODO — implémenter le transfer learning
-    #        (cf. ressources/02_Transfer_learning_essentiel.md)
-    raise NotImplementedError("TODO — construire le ResNet-18 + nouvelle tête")
+    # ── Étape 1 : charger ResNet-18 pré-entraîné ─────────────────────────────
+    # ResNet-18 est un réseau de neurones déjà entraîné sur 1,2 million d'images
+    # (ImageNet, 1000 catégories). Il sait déjà détecter des formes, textures,
+    # bords… On va réutiliser ce savoir plutôt que de repartir de zéro.
+    weights = models.ResNet18_Weights.IMAGENET1K_V1
+    model = models.resnet18(weights=weights)
+
+    # ── Étape 2 : geler le backbone ──────────────────────────────────────────
+    # Le "backbone" est toute la partie convolutive du réseau (détection de formes).
+    # "Geler" = interdire la modification de ces poids pendant l'entraînement.
+    # Avantage : on n'entraîne que la dernière couche → beaucoup plus rapide
+    # et on évite de détruire le savoir acquis sur ImageNet.
+    if freeze_backbone:
+        for param in model.parameters():
+            # requires_grad=False signifie : "ne pas calculer le gradient
+            # pour ce paramètre" → il ne sera pas mis à jour par l'optimiseur.
+            param.requires_grad = False
+
+    # ── Étape 3 : remplacer la tête de classification ────────────────────────
+    # La dernière couche de ResNet-18 (`model.fc`) prédit 1000 classes ImageNet.
+    # On la remplace par une couche qui prédit NOS 7 classes PCB.
+    # `in_features` = taille du vecteur en entrée de cette couche (512 pour ResNet-18).
+    # La nouvelle couche fc aura requires_grad=True par défaut → elle sera entraînée.
+    in_features = model.fc.in_features
+    model.fc = nn.Linear(in_features, n_classes)
+
+    return model
 
 
 # Pour l'entraînement / l'évaluation, réutilise les boucles `train_one_epoch`
