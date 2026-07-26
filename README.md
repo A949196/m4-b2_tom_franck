@@ -1,123 +1,78 @@
 # M4-B2 — Squelette repo (vision PCB Defect — binôme async)
 
-> **Repo template GitHub.** Le membre désigné du binôme clique sur
-> **« Use this template »** → nomme `M4-B2-pcb-<binome>` → invite l'autre.
+> Détection automatique de défauts qualité sur cartes PCB pour TechniMatic
+> Comparatif de 3 approches vision : CNN from scratch (A), transfer learning RestNet-18 (B), zero-shot CLIP (C, estimée).
 
 ---
 
-## 🚀 Démarrage (5 commandes)
+## 🚀 Reproduire en 3 commandes
 
 ```bash
-git clone git@github.com:<owner>/M4-B2-pcb-<binome>.git
-cd M4-B2-pcb-<binome>
-
-python -m venv .venv && source .venv/bin/activate
-# (variante uv : uv venv .venv && source .venv/bin/activate)
-
-# ⚠️ PyTorch CPU pèse ~200 Mo
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-pip install -r requirements.txt
-# (variante uv : uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-#                uv pip install -r requirements.txt)
-```
-
-> 🛠️ **Dépannage** : `No module named pip` après `uv venv` → utiliser `uv pip install …`
-> (un venv créé par uv n'embarque pas pip).
-
-```bash
-
-# Génère les ~2 100 images PCB (déterministe, seed 42, ~30 s)
-python scripts/generate_dataset.py
-
-jupyter notebook notebooks/M4-B2_template.ipynb
+git clone https://github.com/A949196/m4-b2_tom_franck.git && cd m4-b2_tom_franck
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu && pip install -r requirements.txt
+python scripts/generate_dataset.py && jupyter notebook notebooks/M4-B2_template.ipynb
 ```
 
 > 📦 Les ~2 100 images PCB (7 classes = 6 défauts + 1 OK, 64×64) sont **générées par
 > `scripts/generate_dataset.py`** dans `data/pcb_defect_sample/`. Synthétiques,
-> déterministes (seed 42) → tout le monde a le même jeu. Git-ignorées (on ne
-> commite pas la donnée, on la régénère).
+> déterministes (seed 42), générées localement - non commitées.
+---
+
+## 🧭 Schéma de la démarche
+ 
+```mermaid
+flowchart TD
+    A[Dataset PCB Defect<br/>2100 images, 7 classes] --> B[EDA<br/>distribution des classes]
+    B --> C1[Option A<br/>CNN scratch — branche tom/option-a]
+    B --> C2[Option B<br/>Transfer ResNet-18 — branche franck/transfert_learning]
+    B --> C3[Option C<br/>Zero-shot CLIP — estimée]
+    C1 --> D[Comparatif économique<br/>economic_comparison.md]
+    C2 --> D
+    C3 --> D
+    D --> E[Verdict<br/>verdict.md]
+    E --> F[Restitution duo<br/>mardi 1er sept]
+```
 
 ---
 
-## 📁 Structure du repo
+## 📊 Résultats mesurés (résumé)
+ 
+| Critère | Option A (CNN scratch) | Option B (Transfer ResNet-18) | Option C (CLIP, estimée) |
+|---|---|---|---|
+| Temps train (CPU) | 9,6 s | 610,8 s | 0 s |
+| Latence inférence (CPU) | 0,41 ms/image | 56,53 ms/image | ~80-150 ms (estimé) |
+| Accuracy test | 57,5 % | 56,2 % | ~20-40 % (estimé) |
+| Taille modèle | 2,09 Mo | 42,65 Mo | ~150 Mo |
+ 
+Détail complet et sources des estimations : [`economic_comparison.md`](./economic_comparison.md).
+Recommandation finale et conditions de changement d'avis : [`verdict.md`](./verdict.md).
+ 
+---
 
+## 📁 Structure du repo
+ 
 ```
-M4-B2-pcb-<binome>/
+m4-b2_tom_franck/
 ├── scripts/
 │   └── generate_dataset.py              # génère les images PCB (seed 42)
 ├── data/                                # gitignored
 │   └── pcb_defect_sample/               # produit par le script
 │       ├── ok/ open/ short/ ...         # 7 classes
 ├── notebooks/
-│   └── M4-B2_template.ipynb
+│   └── M4-B2_template.ipynb             # EDA + entraînement + éval (A et B)
 ├── src/
 │   ├── load_data.py                     # Dataset PyTorch + dataloaders
-│   ├── option_a_cnn.py                  # CNN from scratch (TODO si choisi)
-│   ├── option_b_transfer.py             # ResNet-18 transfer (TODO si choisi)
-│   └── option_c_clip.py                 # CLIP zero-shot (TODO si choisi)
-├── models/                              # gitignored
+│   ├── option_a_cnn.py                  # CNN from scratch — implémenté
+│   ├── option_b_transfer.py             # ResNet-18 transfer — implémenté
+│   └── option_c_clip.py                 # CLIP zero-shot — non implémenté (estimé)
+├── models/                               # gitignored
 ├── ressources/                          # 📚 6 mini-cours
-│   ├── README.md
-│   ├── 01_CNN_from_scratch_essentiel.md
-│   ├── 02_Transfer_learning_essentiel.md
-│   ├── 03_Zero_shot_CLIP_essentiel.md
-│   ├── 04_Comparaison_economique_essentiel.md
-│   ├── 05_Pair_coding_async_essentiel.md
-│   ├── 06_Grille_decision_approche_essentiel.md
-│   └── liens_officiels.md
-├── decisions.md                         # binôme — choix + répartition
-├── economic_comparison.md               # comparatif 3 approches
-├── verdict.md                           # recommandation 8 lignes
+├── decisions.md                         # choix, répartition, points négociés
+├── economic_comparison.md               # comparatif chiffré des 3 approches
+├── verdict.md                           # recommandation (max 8 lignes)
 ├── requirements.txt
 └── .gitignore
 ```
-
----
-
-## 📚 Mini-cours d'appui
-
-6 mini-cours dans [`./ressources/`](./ressources/) — lecture juste-à-temps.
-**À lire en premier : `06` (grille de décision) — c'est le cœur du choix
-d'approche que vous devez justifier.**
-
-| Tâche | Mini-cours |
-|---|---|
-| **Choisir l'approche (grille de décision C4)** | [`06_Grille_decision_approche_essentiel.md`](./ressources/06_Grille_decision_approche_essentiel.md) |
-| CNN from scratch (option A) | [`01_CNN_from_scratch_essentiel.md`](./ressources/01_CNN_from_scratch_essentiel.md) |
-| Transfer learning (option B) | [`02_Transfer_learning_essentiel.md`](./ressources/02_Transfer_learning_essentiel.md) |
-| Zero-shot CLIP (option C) | [`03_Zero_shot_CLIP_essentiel.md`](./ressources/03_Zero_shot_CLIP_essentiel.md) |
-| Comparaison économique | [`04_Comparaison_economique_essentiel.md`](./ressources/04_Comparaison_economique_essentiel.md) |
-| Pair-coding async | [`05_Pair_coding_async_essentiel.md`](./ressources/05_Pair_coding_async_essentiel.md) |
-
----
-
-## 🧭 Démarche attendue
-
-### Jeudi (3h30 par membre, 7h cumulées binôme)
-
-1. **Coordination kick-off** (~30 min)
-2. **EDA dataset PCB** (~1h, partagé)
-3. **Implémentation de l'option choisie** (~4h, partagé)
-
-### Vendredi matin (3h30 cumulées binôme)
-
-4. **Comparaison économique** (~1h30)
-5. **Verdict + recommandation** (~30 min)
-6. **README + préparation restitution duo** (~1h)
-7. **Finition + test croisé du repo** (~30 min)
-
-→ Compétences visées : **C1 — adapter** renforcé + **C4 — adapter** renforcé.
-
-### ⭐ Extensions optionnelles (« cas client avancé »)
-
-> Non notées (bonus qualitatif). **Seulement si le socle est bouclé.** Les 3
-> approches restent imposées — c'est la **façon de les implémenter** qui s'ouvre.
-> Toute décision ⭐ se justifie dans `decisions.md`.
-
-- ⭐ **CNN** : conçois ton archi (≥ 2 conv + 1 pooling) et **justifie le flatten**.
-- ⭐ **Transfer** : choisis ton backbone (ResNet18 / MobileNet / EfficientNet) et justifie.
-- ⭐ **CLIP** : prompts libres + explique ta stratégie de prompt engineering.
-- ⭐ **Sensibilité au dataset** : change 1-2 paramètres du générateur (bruit dans `augment`, taille/contraste des défauts dans `apply_defect`), régénère, observe comment tes 3 chiffres bougent → les perfs dépendent de la **distribution des données**, pas que du modèle. Aucun résultat imposé ; ne touche pas au dataset figé de ton verdict principal.
 
 ---
 
